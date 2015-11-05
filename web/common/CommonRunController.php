@@ -88,7 +88,9 @@ class CommonRunController extends \yii\base\Action{
 		$data = $this->modelClass->insert();
 		if($data === true)
 			return ['status'=>200,'data'=>['id'=>$this->modelClass->id]];	
-		return ['status'=>202,'data'=>[]];
+		//add error msg
+		$errors = !empty($this->modelClass->errors)?$this->modelClass->errors:[];
+		return ['status'=>202,'data'=>[],'msg'=>$errors];	
 	}
 
 
@@ -98,11 +100,13 @@ class CommonRunController extends \yii\base\Action{
 		if(empty($model)) 
 			return ['status'=>201,'data'=>[]]; 
 
-		if( $model->load(Yii::$app->request->get(),'') && $model->save())
-			return	['status'=>200,'data'=>['id'=>Yii::$app->request->get('id')]]; 
-		else
-			return ['status'=>201,'data'=>[]];	
-	}
+			
+		if( $model->load(Yii::$app->request->get(),'') && $model->save()){
+			return	['status'=>200,'data'=>['id'=>Yii::$app->request->get('id')]];
+		}else{
+			$errors = !empty($model->errors)?$model->errors:[];
+			return ['status'=>202,'data'=>[],'msg'=>$errors];
+		}
 
 
 
